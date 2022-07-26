@@ -19,11 +19,12 @@ Here, we performed an in-depth inbreeding analysis for hihi (Notiomystis cincta)
 Here, we investigate inbreeding and inbreeding depression for hihi (Notiomystis cincta). Firstly, using a custom 45k SNP array, we explore genomic inbreeding patterns by inferring homozygous segments across the genome. Secondly, we measure genomic inbreeding effects on fitness, measured as lifetime reproductive success, and its three components, annual reproductive success, juvenile survival and adult annual survival, in 363 hihi. 
 
 
-Don't hesitate to contact me with questions regarding any of the procedures 🐦 💬
-
 ### Publications
 Publications associated with this thesis include: 
 
-i) Published Article in Proceedings of the Royal Society B
-ii) Published Article in the Molecular Ecology Special Issue: Whole-genome sequencing in Molecular Ecology
-iii) Published Article in Molecular Ecology Resources
+Published Article in Proceedings of the Royal Society B
+Published Article in the Molecular Ecology Special Issue: Whole-genome sequencing in Molecular Ecology
+Published Article in Molecular Ecology Resources
+
+
+Please don't hesitate to contact me with questions regarding any of the procedures 🐦 💬
