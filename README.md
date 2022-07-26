@@ -22,9 +22,9 @@ Here, we investigate inbreeding and inbreeding depression for hihi (*Notiomystis
 ### Publications
 Publications associated with this thesis include: 
 
-Published Article in Proceedings of the Royal Society B
-Published Article in the Molecular Ecology Special Issue: Whole-genome sequencing in Molecular Ecology
-Published Article in Molecular Ecology Resources
+#### Published Article in Proceedings of the Royal Society B
+#### Published Article in the Molecular Ecology Special Issue: Whole-genome sequencing in Molecular Ecology
+#### Published Article in Molecular Ecology Resources
 
 
 Please don't hesitate to contact me with questions regarding any of the procedures 🐦 💬
