@@ -1,6 +1,8 @@
 
+__________________________________________________________________________________________________________________
 
-### This repository contains the name of tools, pipelines, base R and HPC code used for the data chapters in my PhD thesis:
+
+### This GitHub repository contains a list of tools, links to pipelines and example chunks of R and HPC code employed in the data chapters in my PhD thesis:
 
 ## Genomic insights into the adaptive potential of the hihi (*Notiomystis cincta*), a threatened Aotearoa New Zealand bird
 
