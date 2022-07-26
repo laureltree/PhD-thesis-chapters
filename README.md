@@ -16,16 +16,14 @@ We estimated the heritability of three hihi (Notiomystis cincta) morphological t
 Here, we performed an in-depth inbreeding analysis for hihi (Notiomystis cincta), an endemic and nationally vulnerable passerine bird of Aotearoa New Zealand. We first focused on subsampling variants from a reference genome male and then extended our analysis to 10 hihi where low-coverage whole genome resequencing, RAD-seq and SNP array genotypes are available. 
 
 ## Chapter 5: An inbreeding and inbreeding depression analysis
-Here, we investigate inbreeding and inbreeding depression for hihi (Notiomystis cincta). Firstly, using a custom 45k SNP array, we explore genomic inbreeding patterns by inferring homozygous segments across the genome. Secondly, we measure genomic inbreeding effects on fitness, measured as lifetime reproductive success, and its three components, annual reproductive success, juvenile survival and adult annual survival, in 363 hihi. 
+Here, we investigate inbreeding and inbreeding depression for hihi (*Notiomystis cincta*). Firstly, using a custom 45k SNP array, we explore genomic inbreeding patterns by inferring homozygous segments across the genome. Secondly, we measure genomic inbreeding effects on fitness, measured as lifetime reproductive success, and its three components, annual reproductive success, juvenile survival and adult annual survival, in 363 hihi. 
 
 
 ### Publications
 Publications associated with this thesis include: 
 
 Published Article in Proceedings of the Royal Society B
-
 Published Article in the Molecular Ecology Special Issue: Whole-genome sequencing in Molecular Ecology
-
 Published Article in Molecular Ecology Resources
 
 
