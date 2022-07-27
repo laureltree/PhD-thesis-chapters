@@ -1,9 +1,7 @@
 
-### PCA
+## Perform PCA analysis in PLINK:
 
-
-## Perform PCA analysis in PLINK first:
-
+#hihi example
 #filter on maf - reduces to 40616 variants
 #LD_SNPs file has 40616 variants and 1469 samples
 
