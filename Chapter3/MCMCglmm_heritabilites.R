@@ -1,0 +1,458 @@
+
+
+#load("makeG.RData")
+
+#load("tarsus_AnnaG.RData")
+#load("head_AnnaG.RData")
+#load("mass_AnnaG.RData")
+head_Anna_G
+tarsus_Anna_G
+head_Anna_G
+
+# file tarsus_Anna_G
+save(mass_Anna_G,tarsus_Anna_G,head_Anna_G,file="Output/models_morph_Laura.Rdata")
+load("Output/models_morph_Laura.Rdata")
+
+
+###
+model <- mass_Anna_G
+
+save(model,file="Output/Mass.Rdata")
+
+model <- tarsus_Anna_G
+
+save(model,file="Output/Tarsus.Rdata")
+
+model <- head_Anna_G
+
+save(model,file="Output/Head.Rdata")
+
+
+#summarise all data in a better way
+
+#this is using scripts that Pierre gave to Alexis and is from "Summary_models3.R" in Alexis' hard drive folder
+
+library(QGglmm)
+library(coda)
+library(MCMCglmm)
+library(xtable)
+library(ggplot2)
+library(cowplot)
+
+
+theme_set(theme_bw())
+
+##------------------Setting up some parameters
+
+#List of traits
+
+trait_list <- c("Mass", "Tarsus", "Head")
+
+display_list <- c("Fledgling mass","Tarsus length","Head-bill length")
+
+#List of models (aka families) used to analyse each trait
+
+family_list <- c("Gaussian", "Gaussian", "Gaussian")
+
+#If there only Mother-Offspring available for each trait
+
+##TODO: Check that later
+
+reg_list <- c("all", "all", "all")
+
+#Number of traits
+
+ntrait <- length(trait_list)
+
+
+
+##---------------------------Fetching the models
+
+models <- lapply(trait_list, function(trait) {
+  
+  load(paste0("Output/", trait,".Rdata"))
+
+    return(model) #change this name of what is returned if e.g. your models are not called ‘model’ but are called e.g. mass
+
+})
+
+names(models) <- trait_list
+              
+              
+              
+              
+##----------------------------Testing the models
+              
+#Effective Size
+effsize <- lapply(models, function(mod) {
+              
+ effectiveSize(mod$VCV)
+              
+ })
+              
+sapply(effsize, function(vec) {sum(vec[vec != 0] < 1000)})
+              
+#Mass, Tarsus, Head all = 0!!!
+              
+              
+              
+#Heidelberger test
+
+heidel <- lapply(models, function(mod) {
+  
+  heidel.diag(mod$VCV)
+  
+})
+
+
+
+heidel
+
+
+
+##-----------------------Start fetching the results
+
+
+
+#Storing posterior densities of heritabilities in a file
+
+res <- data.frame()
+
+plots <- list()
+
+for (i in 1:ntrait) {
+  
+  ##Finding the parameters of the call
+  
+  trait <- trait_list[i]
+  
+  family <- family_list[i]
+  
+  regtype <- reg_list[i]
+  
+  
+  
+  print(paste0("Computing parameters for ",trait,"..."))
+  
+  
+  
+  ##Fetching the parameters
+  
+  model <- models[[i]]
+  
+  #Getting sample size
+  
+  sampsize <- dim(model[["X"]])[1]
+  
+  indsize <- length(which(colSums(model[["Z"]][ , grep("animal", colnames(model[["Z"]]))]) > 0))
+  
+  #Fetching fixed effects
+  
+  effect <- paste(as.character(model[["Fixed"]][["formula"]])[-c(1, 2)], collapse = "+")
+  
+  #Computing latent (or actual for the Gaussian models) parameters
+  
+  if (family!="ziPoisson") {
+    
+    va <- as.vector(model[["VCV"]][ , "animal"])
+    
+    vp <- rowSums(model[["VCV"]])
+    
+    yhat <- sapply(1:nrow(model$Sol), function(i) {
+      
+      as.vector(as.matrix(model$X) %*% model$Sol[i,]
+                
+      )})
+    
+  } else {
+    
+    va_zi <- model[["VCV"]][,"traitzi_LRS.animal"]
+    
+    vp_zi <- rowSums(model[["VCV"]][,grep("zi",colnames(model[["VCV"]]))])
+    
+    yhat_zi <- sapply(1:nrow(model$Sol),function(i){
+      
+      as.vector(as.matrix(model$X[,grep("zi",colnames(model$X))]) %*% model$Sol[i,grep("zi",colnames(model$X))])
+      
+    })
+    
+    va_nonzi <- model[["VCV"]][,"traitLRS.animal"]
+    
+    vp_nonzi <- rowSums(model[["VCV"]][,grep("zi",colnames(model[["VCV"]]),invert=TRUE)])
+    
+    yhat_nonzi <- sapply(1:nrow(model$Sol),function(i){
+      
+      as.vector(as.matrix(model$X[,grep("zi",colnames(model$X),invert=TRUE)]) %*% model$Sol[i,grep("zi",colnames(model$X),invert=TRUE)])
+      
+    })
+    
+  }
+  
+  if (is.null(model[["CP"]])) {
+    
+    cut <- NULL
+    
+  } else {
+    
+    cut <- cbind(-Inf,0,model[["CP"]],Inf)
+    
+  }
+  
+  
+  
+  ##Computing the parameters on the correct scale
+  
+  #Using QGglmm to compute the parameters (works also for Gaussian, 'cause it's badass!)
+  
+  if (family=="ordinal") {
+    
+    params <- do.call("rbind",lapply(1:length(vp),function(i){
+      
+      QGparams(predict=yhat[,i],var.a=va[i],var.p=vp[i],model=fam,verbose=FALSE)
+      
+    }))
+    
+    
+    
+  } else if (family=="ziPoisson") {
+    
+    params_zi <- data.frame(mean.obs=apply(yhat_zi,2,function(vec){mean(plogis(vec))}),
+                            
+                            var.obs=vp+apply(yhat_zi,2,var)+(pi^2/3),
+                            
+                            var.a.obs=va_zi,
+                            
+                            h2.obs=va_zi/(vp_zi+apply(yhat_zi,2,var)+(pi^2/3)))
+    
+    colnames(params_zi) <- c("mean.obs","var.obs","var.a.obs","h2.obs")
+    
+    params_nonzi <- do.call("rbind",lapply(1:length(vp_nonzi),function(i){
+      
+      QGparams(predict=yhat_nonzi[,i],var.a=va_nonzi[i],var.p=vp_nonzi[i],model="Poisson.log",verbose=FALSE)
+      
+    }))
+    
+    params <- params_zi
+    
+  } else {
+    
+    fam <- ifelse(family == "binomial", "binom1.probit", family)
+    
+    params <- do.call("rbind",lapply(1:length(vp),function(i){
+      
+      QGparams(predict=yhat[,i],var.a=va[i],var.p=vp[i],model=fam,verbose=FALSE)
+      
+    }))
+    
+  }
+  
+  #Computing derivative parameters
+  
+  params$cvp <- 100*sqrt(params[["var.obs"]])/params[["mean.obs"]]
+  
+  params$cva <- 100*sqrt(params[["var.a.obs"]])/params[["mean.obs"]]
+  
+  
+  
+  #Printing posterior density for heritabilities
+  
+  plots[[i]] <- ggplot() + geom_density(aes(h2.obs), data = params, size = 2, fill = "grey") + labs(title = display_list[i], x = "h²")
+  
+  
+  
+  ##Formatting the results
+  
+  if (family=="ziPoisson") {trait <- "LRS_zero"}
+  
+  res <- rbind(res,
+               
+               data.frame(trait = trait, sampsize = sampsize, indsize = indsize,
+                          
+                          model = family, effect = effect,
+                          
+                          mean      = mean(params$mean.obs),
+                          
+                          mean.mode = posterior.mode(as.mcmc(params$mean.obs)),
+                          
+                          mean.low  = HPDinterval(as.mcmc(params$mean.obs))[1],
+                          
+                          mean.up   = HPDinterval(as.mcmc(params$mean.obs))[2],
+                          
+                          vp        = mean(params$var.obs),
+                          
+                          vp.mode   = posterior.mode(as.mcmc(params$var.obs)),
+                          
+                          vp.low    = HPDinterval(as.mcmc(params$var.obs))[1],
+                          
+                          vp.up     = HPDinterval(as.mcmc(params$var.obs))[2],
+                          
+                          cvp       = mean(params$cvp),
+                          
+                          cvp.mode  = posterior.mode(as.mcmc(params$cvp)),
+                          
+                          cvp.low   = HPDinterval(as.mcmc(params$cvp))[1],
+                          
+                          cvp.up    = HPDinterval(as.mcmc(params$cvp))[2],
+                          
+                          va        = mean(params$var.a.obs),
+                          
+                          va.mode   = posterior.mode(as.mcmc(params$var.a.obs)),
+                          
+                          va.se     = sd(params$var.a.obs),
+                          
+                          va.low    = HPDinterval(as.mcmc(params$var.a.obs))[1],
+                          
+                          va.up     = HPDinterval(as.mcmc(params$var.a.obs))[2],
+                          
+                          cva       = mean(params$cva),
+                          
+                          cva.mode  = posterior.mode(as.mcmc(params$cva)),
+                          
+                          cva.low   = HPDinterval(as.mcmc(params$cva))[1],
+                          
+                          cva.up    = HPDinterval(as.mcmc(params$cva))[2],
+                          
+                          h2        = mean(params$h2.obs),
+                          
+                          h2.mode   = posterior.mode(as.mcmc(params$h2.obs)),
+                          
+                          h2.median  = median(params$h2.obs),
+                          
+                          h2.se     = sd(params$h2.obs),
+                          
+                          h2.low    = HPDinterval(as.mcmc(params$h2.obs))[1],
+                          
+                          h2.up     = HPDinterval(as.mcmc(params$h2.obs))[2]))
+  
+  if (family=="ziPoisson") {
+    
+    params <- params_nonzi
+    
+    trait <- "LRS"
+    
+    #Computing derivative parameters
+    
+    params$cvp <- 100*sqrt(params[["var.obs"]])/params[["mean.obs"]]
+    
+    params$cva <- 100*sqrt(params[["var.a.obs"]])/params[["mean.obs"]]
+    
+    res <- rbind(res,
+                 
+                 data.frame(trait = trait, sampsize = sampsize, indsize = indsize,
+                            
+                            model = family, effect = effect,
+                            
+                            mean       = mean(params$mean.obs),
+                            
+                            mean.mode  = posterior.mode(as.mcmc(params$mean.obs)),
+                            
+                            mean.low   = HPDinterval(as.mcmc(params$mean.obs))[1],
+                            
+                            mean.up    = HPDinterval(as.mcmc(params$mean.obs))[2],
+                            
+                            vp         = mean(params$var.obs),
+                            
+                            vp.mode    = posterior.mode(as.mcmc(params$var.obs)),
+                            
+                            vp.low     = HPDinterval(as.mcmc(params$var.obs))[1],
+                            
+                            vp.up      = HPDinterval(as.mcmc(params$var.obs))[2],
+                            
+                            cvp        = mean(params$cvp),
+                            
+                            cvp.mode   = posterior.mode(as.mcmc(params$cvp)),
+                            
+                            cvp.low    = HPDinterval(as.mcmc(params$cvp))[1],
+                            
+                            cvp.up     = HPDinterval(as.mcmc(params$cvp))[2],
+                            
+                            va         = mean(params$var.a.obs),
+                            
+                            va.mode    = posterior.mode(as.mcmc(params$var.a.obs)),
+                            
+                            va.se      = sd(params$var.a.obs),
+                            
+                            va.low     = HPDinterval(as.mcmc(params$var.a.obs))[1],
+                            
+                            va.up      = HPDinterval(as.mcmc(params$var.a.obs))[2],
+                            
+                            cva        = mean(params$cva),
+                            
+                            cva.mode   = posterior.mode(as.mcmc(params$cva)),
+                            
+                            cva.low    = HPDinterval(as.mcmc(params$cva))[1],
+                            
+                            cva.up     = HPDinterval(as.mcmc(params$cva))[2],
+                            
+                            h2         = mean(params$h2.obs),
+                            
+                            h2.mode    = posterior.mode(as.mcmc(params$h2.obs)),
+                            
+                            h2.median  = median(params$h2.obs),
+                            
+                            h2.se      = sd(params$h2.obs),
+                            
+                            h2.low     = HPDinterval(as.mcmc(params$h2.obs))[1],
+                            
+                            h2.up      = HPDinterval(as.mcmc(params$h2.obs))[2]))
+    
+  }
+  
+  gc()
+  
+}
+
+rownames(res) <- NULL
+
+
+
+
+
+##------------------------------Outputting the results
+
+save(res, plots, file = "Output/summary_full_herit_Laura.Rdata")
+
+write.csv(res,file="Output/summary_full_herit_Laura.csv",row.names=FALSE)
+
+
+
+##------------------------------Output for the article
+
+load("Output/summary_full_herit_Laura.Rdata")
+
+
+
+# Graph of the densities
+
+cairo_pdf("Figs/dens_herit_Laura.pdf", height = 12, width = 12)
+
+plot_grid(plotlist = plots)
+
+dev.off()
+
+
+############### for partitioning
+
+##------------------------------Output for the article
+load("chr_part_head.Rdata")
+
+# Graph of the densities
+cairo_pdf("Figs/dens_herit_head.pdf", height = 12, width = 12)
+plot_grid(plotlist = plots)
+dev.off()
+
+##------------------------------Output for the article
+load("chr_part_mass.Rdata")
+
+# Graph of the densities
+cairo_pdf("Figs/dens_herit_mass.pdf", height = 12, width = 12)
+plot_grid(plotlist = plots)
+dev.off()
+
+##------------------------------Output for the article
+load("chr_part_tarsus.Rdata")
+
+# Graph of the densities
+cairo_pdf("Figs/dens_herit_tarsus.pdf", height = 12, width = 12)
+plot_grid(plotlist = plots)
+dev.off()
