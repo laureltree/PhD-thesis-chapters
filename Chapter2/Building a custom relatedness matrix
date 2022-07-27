@@ -1,0 +1,260 @@
+#### building a custom relatedness matrix
+
+########################
+
+library(data.table)
+library(tidyverse)
+library(dplyr)
+library(splitstackshape)
+
+
+########################
+
+
+### step 1
+### transforming pedigree data into matrix
+
+
+########################
+
+
+# load pedigree
+microsatellite_pedigree <- fread("field_pedigree.txt")
+head(microsatellite_pedigree)
+tail(microsatellite_pedigree)
+
+# One way to find individuals that has both parents genotyped:
+microsatellite_pedigree$allgt <- microsatellite_pedigree$dam %in% microsatellite_pedigree$id & microsatellite_pedigree$sire %in% microsatellite_pedigree$id
+genotyped <- microsatellite_pedigree[which(microsatellite_pedigree$allgt),]
+head(genotyped)
+dim(genotyped) 
+
+## getting the full sib table:
+fs_table <- genotyped[, 1:3] %>%
+  group_by(dam, sire) %>%
+  mutate(fs = purrr::map_chr(id, ~toString(setdiff(id, .x)))) %>%
+  cSplit("fs")
+fs_table[,1:8]
+## 
+
+### getting the table with offspring per dam
+dams_and_their_offspring <- genotyped[, 1:3] %>%
+  group_by(dam) %>%
+  summarise(id = toString(id)) %>%
+  cSplit("id")
+names(dams_and_their_offspring) <- gsub("id", "offspring", names(dams_and_their_offspring))
+names(dams_and_their_offspring)[1]<-"id"
+dams_and_their_offspring[,1:8]
+# dim(dams_and_their_offspring)
+## 
+
+## do same with sire
+sires_and_their_offspring <- genotyped[, 1:3] %>%
+  group_by(sire) %>%
+  summarise(id = toString(id)) %>%
+  cSplit("id")
+names(sires_and_their_offspring) <- gsub("id", "offspring", names(sires_and_their_offspring))
+names(sires_and_their_offspring)[1]<-"id"
+sires_and_their_offspring[,1:8]
+# dim(sires_and_their_offspring)
+
+## combine the dam and sire offspring table
+sires_dams_offspring <- rbind(dams_and_their_offspring, sires_and_their_offspring, fill= TRUE)
+dim(sires_dams_offspring) #258
+sires_dams_offspring[,1:8]
+
+## now combine the fs table with the offspring table
+complete_id_matrix <- merge(fs_table, sires_dams_offspring, by = "id", all = TRUE)
+complete_id_matrix[,1:15]
+# dim 694
+# now we have the full matrix
+
+########################
+
+
+### replacing IDs with genomic relatedness values
+
+
+########################
+
+
+### now we want to get the relatedness values for each of those pairs:
+
+# matrix:
+pedigree_based_matrix <- complete_id_matrix
+tail(pedigree_based_matrix)[,1:12]
+
+# relatedness table is called Rel.gt and retrieved from kinship2
+
+## getting the full sib table:
+fs_table_1250 <- na.omit(microsatellite_pedigree[, 1:3]) %>%
+  group_by(dam, sire) %>%
+  mutate(fs = purrr::map_chr(id, ~toString(setdiff(id, .x)))) %>%
+  cSplit("fs")
+dim(fs_table_1250) #1066
+fs_table_1250[,1:8]
+## 
+
+### getting the table with offspring per dam
+dams_and_their_offspring_1250 <- na.omit(microsatellite_pedigree[, 1:3]) %>%
+  group_by(dam) %>%
+  summarise(id = toString(id)) %>%
+  cSplit("id")
+names(dams_and_their_offspring_1250) <- gsub("id", "offspring", names(dams_and_their_offspring_1250))
+names(dams_and_their_offspring_1250)[1]<-"id"
+dams_and_their_offspring_1250[,1:8]
+# dim(dams_and_their_offspring_1250)
+## 208
+
+## do same with sire
+sires_and_their_offspring_1250 <- na.omit(microsatellite_pedigree[, 1:3]) %>%
+  group_by(sire) %>%
+  summarise(id = toString(id)) %>%
+  cSplit("id")
+names(sires_and_their_offspring_1250) <- gsub("id", "offspring", names(sires_and_their_offspring_1250))
+names(sires_and_their_offspring_1250)[1]<-"id"
+sires_and_their_offspring_1250[,1:8]
+# dim(sires_and_their_offspring_1250)
+# 205
+
+## combine the dam and sire offspring table
+sires_dams_offspring_1250 <- rbind(dams_and_their_offspring_1250, sires_and_their_offspring_1250, fill= TRUE)
+dim(sires_dams_offspring_1250) #413
+sires_dams_offspring_1250[,1:8]
+
+## now combine the fs table with the offspring table
+complete_id_matrix_1250 <- merge(fs_table_1250, sires_dams_offspring_1250, by = "id", all = TRUE)
+complete_id_matrix_1250[,1:14]
+dim(complete_id_matrix_1250)
+# 1251 #38
+
+########################
+
+### now get the pw relatedness values in:
+
+pedigree_based_matrix_1250 <- complete_id_matrix_1250
+
+
+## my data
+d <- pedigree_based_matrix_1250
+e <- pedigree_based_matrix_1250
+head(d) # id  dam sire fs_1 fs_2 fs_3 fs_4 fs_5 fs_6 fs_7 fs_8 offspring_01 ...
+b <- Rel.gt
+head(b) #  IID1  IID2  R.SNP R.ped
+
+
+## now replace the values
+d$R.dam <- b[match(paste0(d$id,d$dam), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.sire <- b[match(paste0(d$id,d$sire), paste0(b$IID1,b$IID2)),]$R.SNP
+
+
+d$R.fs_1 <- b[match(paste0(d$id,d$fs_1), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_2 <- b[match(paste0(d$id,d$fs_2), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_3 <- b[match(paste0(d$id,d$fs_3), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_4 <- b[match(paste0(d$id,d$fs_4), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_5 <- b[match(paste0(d$id,d$fs_5), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_6 <- b[match(paste0(d$id,d$fs_6), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_7 <- b[match(paste0(d$id,d$fs_7), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.fs_8 <- b[match(paste0(d$id,d$fs_8), paste0(b$IID1,b$IID2)),]$R.SNP
+
+
+d$R.offspring_01 <- b[match(paste0(d$id,d$offspring_01), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_02 <- b[match(paste0(d$id,d$offspring_02), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_03 <- b[match(paste0(d$id,d$offspring_03), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_04 <- b[match(paste0(d$id,d$offspring_04), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_05 <- b[match(paste0(d$id,d$offspring_05), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_06 <- b[match(paste0(d$id,d$offspring_06), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_07 <- b[match(paste0(d$id,d$offspring_07), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_08 <- b[match(paste0(d$id,d$offspring_08), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_09 <- b[match(paste0(d$id,d$offspring_09), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_10 <- b[match(paste0(d$id,d$offspring_10), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_11 <- b[match(paste0(d$id,d$offspring_11), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_12 <- b[match(paste0(d$id,d$offspring_12), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_13 <- b[match(paste0(d$id,d$offspring_13), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_14 <- b[match(paste0(d$id,d$offspring_14), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_15 <- b[match(paste0(d$id,d$offspring_15), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_16 <- b[match(paste0(d$id,d$offspring_16), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_17 <- b[match(paste0(d$id,d$offspring_17), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_18 <- b[match(paste0(d$id,d$offspring_18), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_19 <- b[match(paste0(d$id,d$offspring_19), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_20 <- b[match(paste0(d$id,d$offspring_20), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_21 <- b[match(paste0(d$id,d$offspring_21), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_22 <- b[match(paste0(d$id,d$offspring_22), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_23 <- b[match(paste0(d$id,d$offspring_23), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_24 <- b[match(paste0(d$id,d$offspring_24), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_25 <- b[match(paste0(d$id,d$offspring_25), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_26 <- b[match(paste0(d$id,d$offspring_26), paste0(b$IID1,b$IID2)),]$R.SNP
+d$R.offspring_27 <- b[match(paste0(d$id,d$offspring_27), paste0(b$IID1,b$IID2)),]$R.SNP
+
+## delete the first columns
+SNP_based_matrix_1250_01 <- d[,-c(2:38)]
+SNP_based_matrix_1250_01[,1:8]             # pedigree_based_matrix[,1:8]
+ 
+
+## there is still some values missing, we need to fill those gaps
+
+
+## do the same for the other IID1 IID2 order
+## now replace the values
+e$R.dam <- b[match(paste0(e$id,e$dam), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.sire <- b[match(paste0(e$id,e$sire), paste0(b$IID2,b$IID1)),]$R.SNP
+
+
+e$R.fs_1 <- b[match(paste0(e$id,e$fs_1), paste0(b$IID2,b$IID1)),]$R.SNP # 75688
+e$R.fs_2 <- b[match(paste0(e$id,e$fs_2), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_3 <- b[match(paste0(e$id,e$fs_3), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_4 <- b[match(paste0(e$id,e$fs_4), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_5 <- b[match(paste0(e$id,e$fs_5), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_6 <- b[match(paste0(e$id,e$fs_6), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_7 <- b[match(paste0(e$id,e$fs_7), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.fs_8 <- b[match(paste0(e$id,e$fs_8), paste0(b$IID2,b$IID1)),]$R.SNP
+
+
+e$R.offspring_01 <- b[match(paste0(e$id,e$offspring_01), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_02 <- b[match(paste0(e$id,e$offspring_02), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_03 <- b[match(paste0(e$id,e$offspring_03), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_04 <- b[match(paste0(e$id,e$offspring_04), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_05 <- b[match(paste0(e$id,e$offspring_05), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_06 <- b[match(paste0(e$id,e$offspring_06), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_07 <- b[match(paste0(e$id,e$offspring_07), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_08 <- b[match(paste0(e$id,e$offspring_08), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_09 <- b[match(paste0(e$id,e$offspring_09), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_10 <- b[match(paste0(e$id,e$offspring_10), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_11 <- b[match(paste0(e$id,e$offspring_11), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_12 <- b[match(paste0(e$id,e$offspring_12), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_13 <- b[match(paste0(e$id,e$offspring_13), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_14 <- b[match(paste0(e$id,e$offspring_14), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_15 <- b[match(paste0(e$id,e$offspring_15), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_16 <- b[match(paste0(e$id,e$offspring_16), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_17 <- b[match(paste0(e$id,e$offspring_17), paste0(b$IID2,b$IID1)),]$R.SNP
+e$R.offspring_18 <- b[match(paste0(e$id,e$offspring_18), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_19 <- b[match(paste0(e$id,e$offspring_19), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_20 <- b[match(paste0(e$id,e$offspring_20), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_21 <- b[match(paste0(e$id,e$offspring_21), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_22 <- b[match(paste0(e$id,e$offspring_22), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_23 <- b[match(paste0(e$id,e$offspring_23), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_24 <- b[match(paste0(e$id,e$offspring_24), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_25 <- b[match(paste0(e$id,e$offspring_25), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_26 <- b[match(paste0(e$id,e$offspring_26), paste0(b$IID1,b$IID2)),]$R.SNP
+e$R.offspring_27 <- b[match(paste0(e$id,e$offspring_27), paste0(b$IID1,b$IID2)),]$R.SNP
+
+
+SNP_based_matrix_1250_02 <- e[,-c(2:38)]
+SNP_based_matrix_1250_02[,1:8]  
+
+
+## now merge the two to get the final table
+dim(SNP_based_matrix_1250_01)
+head(SNP_based_matrix_1250_01)[,1:8]
+SNP_based_matrix_1250_01[30:40,1:13]
+dim(SNP_based_matrix_1250_02)
+head(SNP_based_matrix_1250_02)[,1:8]
+SNP_based_matrix_1250_02[30:40,1:13]
+
+## https://stackoverflow.com/questions/41175128/r-replacing-nas-in-a-data-frame-with-values-in-the-same-position-in-another-dat
+dfa_1250 <- data.frame(SNP_based_matrix_1250_01)
+dfrepair_1250 <- data.frame(SNP_based_matrix_1250_02)
+dfa_1250[is.na(dfa_1250)] <- dfrepair_1250[is.na(dfa_1250)]
+dfa_1250[30:40,1:13]
+dim(dfa_1250) #1251
+# dfa[,1:5]
