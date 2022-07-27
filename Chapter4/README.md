@@ -1,8 +1,5 @@
 
-## 
-Laura Duntsch,Annabel Whibley,Patricia Brekke,John G. Ewen,Anna W. Santure
-
-
+## Genomic data of different resolutions reveal consistent inbreeding estimates but contrasting homozygosity landscapes for the threatened Aotearoa New Zealand hihi
 
 #### Genome assembly for the reference individual
 We generated a draft genome assembly for Yellow using Oxford Nanopore Technologies (ONT) long read sequencing. Genomic DNA was extracted using the NEB Monarch gDNA extraction. Sequencing libraries were prepared using the ligation sequencing kit (LSK-109) and run across 8 MinION R9.4.1 flow cells. To maximise output, flow cells were flushed with the nuclease wash kit (WSH-003) and new library loaded 3–5 times during each sequencing run. A total of 62.7 Gb raw data was obtained following base-calling with Guppy v3.6.2 (https://github.com/nanoporetech). This data was filtered to remove any contaminating adaptor sequence using PoreChop v0.2.4 (Wick et al., 2017). Further filtering was performed with NanoPack tools (Wick et al., 2017): sequences derived from the DCS internal control were removed with Nanolyse v.1.2.0 (De Coster et al., 2018); reads were also filtered for quality (>q10) and to exclude reads shorter than 5 kb using NanoFilt v 2.6.0 (De Coster et al., 2018).
