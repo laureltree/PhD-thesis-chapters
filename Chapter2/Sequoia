@@ -1,5 +1,5 @@
 
-As seen in: https://rdrr.io/cran/sequoia/f/vignettes/vignette-main.Rmd
+Tutorial as seen in: https://rdrr.io/cran/sequoia/f/vignettes/vignette-main.Rmd
 
 # read in genotype data if already coded as 0/1/2, with missing=-9:
 Geno <- as.matrix(read.csv("mydata.csv", header=FALSE, row.names=1))
