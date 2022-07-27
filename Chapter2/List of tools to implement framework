@@ -1,0 +1,21 @@
+Platforms:
+R - https://www.r-project.org/
+RStudio - https://www.rstudio.com/
+HPC - https://www.nesi.org.nz/services/high-performance-computing-and-data-analytics
+
+Principal Component Analysis:
+PLINK - https://www.cog-genomics.org/plink/
+
+Sex check:
+PLINK - https://www.cog-genomics.org/plink/
+GENHET - http://www.aureliecoulon.net/research/ac-computer-programs.html
+
+Parentage assignment:
+Sequoia - https://rdrr.io/cran/sequoia/
+COLONY - https://www.zsl.org/science/software/colony
+
+Estimate relatedness:
+kinship2 - https://cran.r-project.org/web/packages/kinship2/index.html
+
+Plot genotyping plates:
+platetools - https://cran.r-project.org/web/packages/platetools/index.html
