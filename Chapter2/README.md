@@ -1,4 +1,4 @@
-## The framework
+## Who are you? A framework to identify and report genetic sample mix-ups
 
 
 #### Detection of sample mix-ups
