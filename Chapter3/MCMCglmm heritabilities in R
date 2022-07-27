@@ -2,35 +2,26 @@
 
 #load("makeG.RData")
 
-#load("tarsus_AnnaG.RData")
-#load("head_AnnaG.RData")
-#load("mass_AnnaG.RData")
-head_Anna_G
-tarsus_Anna_G
-head_Anna_G
+#load("tarsus_G.RData")
+#load("head_G.RData")
+#load("mass_G.RData")
+head_G
+tarsus_G
+head_G
 
 # file tarsus_Anna_G
-save(mass_Anna_G,tarsus_Anna_G,head_Anna_G,file="Output/models_morph_Laura.Rdata")
-load("Output/models_morph_Laura.Rdata")
-
+save(mass_G,tarsus_G,head_G,file="Output/models_morph.Rdata")
+load("Output/models_morph.Rdata")
 
 ###
-model <- mass_Anna_G
-
+model <- mass_G
 save(model,file="Output/Mass.Rdata")
-
-model <- tarsus_Anna_G
-
+model <- tarsus_G
 save(model,file="Output/Tarsus.Rdata")
-
-model <- head_Anna_G
-
+model <- head_G
 save(model,file="Output/Head.Rdata")
 
-
 #summarise all data in a better way
-
-#this is using scripts that Pierre gave to Alexis and is from "Summary_models3.R" in Alexis' hard drive folder
 
 library(QGglmm)
 library(coda)
@@ -39,7 +30,6 @@ library(xtable)
 library(ggplot2)
 library(cowplot)
 
-
 theme_set(theme_bw())
 
 ##------------------Setting up some parameters
@@ -47,47 +37,29 @@ theme_set(theme_bw())
 #List of traits
 
 trait_list <- c("Mass", "Tarsus", "Head")
-
 display_list <- c("Fledgling mass","Tarsus length","Head-bill length")
-
 #List of models (aka families) used to analyse each trait
-
 family_list <- c("Gaussian", "Gaussian", "Gaussian")
-
 #If there only Mother-Offspring available for each trait
-
-##TODO: Check that later
-
 reg_list <- c("all", "all", "all")
-
 #Number of traits
-
 ntrait <- length(trait_list)
-
 
 
 ##---------------------------Fetching the models
 
 models <- lapply(trait_list, function(trait) {
-  
-  load(paste0("Output/", trait,".Rdata"))
-
+    load(paste0("Output/", trait,".Rdata"))
     return(model) #change this name of what is returned if e.g. your models are not called ‘model’ but are called e.g. mass
-
 })
-
 names(models) <- trait_list
               
-              
-              
-              
+                      
 ##----------------------------Testing the models
               
 #Effective Size
-effsize <- lapply(models, function(mod) {
-              
- effectiveSize(mod$VCV)
-              
+effsize <- lapply(models, function(mod) {            
+ effectiveSize(mod$VCV)             
  })
               
 sapply(effsize, function(vec) {sum(vec[vec != 0] < 1000)})
@@ -95,16 +67,12 @@ sapply(effsize, function(vec) {sum(vec[vec != 0] < 1000)})
 #Mass, Tarsus, Head all = 0!!!
               
               
-              
+             
 #Heidelberger test
 
 heidel <- lapply(models, function(mod) {
-  
   heidel.diag(mod$VCV)
-  
 })
-
-
 
 heidel
 
@@ -117,7 +85,6 @@ heidel
 #Storing posterior densities of heritabilities in a file
 
 res <- data.frame()
-
 plots <- list()
 
 for (i in 1:ntrait) {
@@ -410,21 +377,21 @@ rownames(res) <- NULL
 
 ##------------------------------Outputting the results
 
-save(res, plots, file = "Output/summary_full_herit_Laura.Rdata")
+save(res, plots, file = "Output/summary_full_herit.Rdata")
 
-write.csv(res,file="Output/summary_full_herit_Laura.csv",row.names=FALSE)
+write.csv(res,file="Output/summary_full_herit.csv",row.names=FALSE)
 
 
 
 ##------------------------------Output for the article
 
-load("Output/summary_full_herit_Laura.Rdata")
+load("Output/summary_full_herit.Rdata")
 
 
 
 # Graph of the densities
 
-cairo_pdf("Figs/dens_herit_Laura.pdf", height = 12, width = 12)
+cairo_pdf("Figs/dens_herit.pdf", height = 12, width = 12)
 
 plot_grid(plotlist = plots)
 
