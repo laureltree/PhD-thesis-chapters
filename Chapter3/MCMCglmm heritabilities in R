@@ -9,7 +9,7 @@ head_G
 tarsus_G
 head_G
 
-# file tarsus_Anna_G
+# file tarsus_G
 save(mass_G,tarsus_G,head_G,file="Output/models_morph.Rdata")
 load("Output/models_morph.Rdata")
 
