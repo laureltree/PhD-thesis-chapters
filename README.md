@@ -4,7 +4,7 @@
 Presented here are a list of tools and example scripts used in each data chapter of my thesis. Within each directory is a brief overview of chapter contents and details about each of the tools used. In recognition of Indigenous Data sovereignty of data related to culturally significant species, any sample IDs have been redacted from these scripts and data files are only available on request.
 
 
-The thesis is devided into four data chapters:
+### The thesis is devided into four data chapters:
 
 ## Chapter 2: A framework to resolve sample mix-ups
 We surveyed the community and found that almost 80% of responding researchers have encountered sample mix-ups. However, many recent studies in the field of molecular ecology do not appear to systematically report individual assignment checks as part of their publications. Although checks may be done, lack of consistent reporting means that it is difficult to assess whether sample mix-ups have occurred or been detected. Here, we present an easy-to-follow sample verification framework that can utilise existing metadata, including species, population structure, sex and pedigree information.
