@@ -1,1 +1,55 @@
 
+As seen in: https://rdrr.io/cran/sequoia/f/vignettes/vignette-main.Rmd
+
+# read in genotype data if already coded as 0/1/2, with missing=-9:
+Geno <- as.matrix(read.csv("mydata.csv", header=FALSE, row.names=1))
+CheckGeno(Geno)
+# or read in from several other input formats (not .vcf (yet)):
+Geno <- GenoConvert(InFile = "mydata.ped", InFormat="ped")
+#
+# read in lifehistory data: ID-Sex-birthyear, column names ignored
+LH <- read.table("LifeHistoryData.txt", header=T)
+#
+# duplicate check & parentage assignment (takes few minutes)
+ParOUT <- sequoia(GenoM = Geno,  LifeHistData = LH_HSg5,  Err=0.005,
+                  Module="par", quiet = FALSE, Plot = TRUE)
+# (NOTE: from version 2.1 onward, 'Module' replaces 'MaxSibIter')
+#
+ParOUT$DupGenotype  # inspect duplicates (intentional or accidental)
+#
+# compare assigned parents to field pedigree (check column order!)
+FieldPed <- read.table("FieldPed.txt", header=T)
+PC.par <- PedCompare(Ped1 = FieldPed[, c("id", "dam", "sire")],
+                     Ped2 = ParOUT$PedigreePar)
+PC.par$Counts["TT",,]
+#
+# ..........................................................
+# polish dataset: 
+# remove one indiv. from each duplicate pair
+Geno2 <- Geno[!rownames(Geno) %in% ParOUT$DupGenotype$ID2,] 
+# & drop low call rate samples
+# & drop SNPs with high error rate and/or low MAF
+stats <- SnpStats(Geno, ParOUT$PedigreePar)
+MAF <- ifelse(stats[,"AF"] <= 0.5, stats[,"AF"], 1-stats[,"AF"])
+Geno2 <- Geno2[, -which(stats[,"Err.hat"]>0.05 | MAF < 0.1)]
+#
+Indiv.Mis <- apply(Geno2, 1, function(x) sum(x == -9)) / ncol(Geno2)
+Geno2 <- Geno2[Indiv.Mis < 0.2, ]
+# check histograms for sensible thresholds, iterate if necessary
+#
+# ..........................................................
+# run full pedigree reconstruction (may take up to a few hours)
+SeqOUT <- sequoia(GenoM = Geno2,
+                  LifeHistData = LH_HSg5,
+                  Module = "ped", 
+                  Err = 0.001)
+#
+SummarySeq(SeqOUT)  # inspect assigned parents, prop. dummy parents, etc.
+#
+# check full sibs, half sibs etc.
+Pairwise <- ComparePairs(SeqOUT$Pedigree, patmat = TRUE)
+#
+# save results: single compressed .RData file, and/or folder with text files
+save(SeqOUT, Geno, OtherStuff, file="Sequoia_output_date.RData")
+writeSeq(SeqList = SeqOUT, GenoM = Geno, folder = "Sequoia-OUT")
+
