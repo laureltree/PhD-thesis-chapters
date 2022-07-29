@@ -1,3 +1,82 @@
-This part of the analysis was run using code provided by Stoffel et al. on: https://github.com/mastoffel/sheep_ID
+## This part of the analysis was run using code provided by Stoffel et al. on: https://github.com/mastoffel/sheep_ID
 
-For any queries, please contact the author directly.
+## For any queries, please contact the author directly.
+
+
+
+## Hihi models
+
+
+## LRS
+# focal SNP, chromosome of focal snp, data
+run_gwas <- function(snp, data) {
+  # for mean froh without focal chr
+  chr <- as.numeric(snps_map_sub[snps_map_sub$snp.name == snp, "chromosome"])   
+  froh_no_chr <- paste0("froh_no_chr", chr)
+  
+  formula_snp <- as.formula(paste0("Total_offspring ~ 1 + Sex * ", froh_no_chr, " + ", 
+                                   snp, " + ", paste0("roh_0_", snp), " + ", paste0("roh_2_", snp),"+",
+                                   "pc1 + pc2 + pc3 + pc4 + pc5 + pc6 + pc7 + (1|Cohort) + (1|Dam)"
+                                 ))
+  mod <- glmer(formula = formula_snp,
+               data = data, family = "poisson",
+               control = glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  out <- broom.mixed::tidy(mod)
+  out
+}
+
+## ARS
+# focal SNP, chromosome of focal snp, data
+run_gwas <- function(snp, data) {
+  # for mean froh without focal chr
+  chr <- as.numeric(snps_map_sub[snps_map_sub$snp.name == snp, "chromosome"])  
+  froh_no_chr <- paste0("froh_no_chr", chr)
+  
+  formula_snp <- as.formula(paste0("AnnRepSuc ~ 1 + (Age^2) + Sex * ", 
+                                   froh_no_chr, " + ", snp, "+ ", paste0("roh_0_", snp), "+", paste0("roh_2_", snp),"+",
+                                   "pc1 + pc2 + pc3 + pc4 + pc5 + pc6 + pc7 + (1|Cohort) + (1|id) + (1|Year) + (1|Dam)"
+                                 ))
+  mod <- glmer(formula = formula_snp,
+               data = data, family = "poisson",
+               control = glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  out <- broom.mixed::tidy(mod)
+  out
+}
+
+
+## ADS
+# focal SNP, chromosome of focal snp, data
+run_gwas <- function(snp, data) {
+  # for mean froh without focal chr
+  chr <- as.numeric(snps_map_sub[snps_map_sub$snp.name == snp, "chromosome"])  
+  froh_no_chr <- paste0("froh_no_chr", chr)
+  
+  formula_snp <- as.formula(paste0("AnnSuv ~ 1 + Sex * ", 
+                                   froh_no_chr, " + ", snp, "+ ", paste0("roh_0_", snp), "+", paste0("roh_2_", snp),"+",
+                                   "pc1 + pc2 + pc3 + pc4 + pc5 + pc6 + pc7 + (1|Cohort) + (1|id) + (1|Year) + (1|Dam)"
+                                 ))
+  mod <- glmer(formula = formula_snp,
+               data = data, family = "binomial",
+               control = glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  out <- broom.mixed::tidy(mod)
+  out
+}
+
+
+## JUS
+# focal SNP, chromosome of focal snp, data
+run_gwas <- function(snp, data) {
+  # for mean froh without focal chr
+  chr <- as.numeric(snps_map_sub[snps_map_sub$snp.name == snp, "chromosome"])   
+  froh_no_chr <- paste0("froh_no_chr", chr)
+  
+  formula_snp <- as.formula(paste0("survey_count ~ 1 + Sex * ", 
+                                   froh_no_chr, " + ", snp, "+ ", paste0("roh_0_", snp), "+", paste0("roh_2_", snp),"+",
+                                   "pc1 + pc2 + pc3 + pc4 + pc5 + pc6 + pc7 + (1|Cohort) + (1|Dam)"
+                                 ))
+  mod <- glmer(formula = formula_snp,
+               data = data, family = "binomial",
+               control = glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  out <- broom.mixed::tidy(mod)
+  out
+}
