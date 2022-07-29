@@ -32,18 +32,3 @@ SNPchip_GP <- zoodata(genofile = "SNPchip_data.gen", zformat = "gp", samplefile 
 mix4R <- zoomodel(K=4, base=10, err = 0.0025, layers=TRUE)
 ## run model on data
 SNPchip_model_out <- zoorun(mix4R, SNPchip_GP, localhbd = TRUE)
-############ down-sampling a larger dataset ##########
-## in command line:
-## random subsample to 1/16, etc.
-plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.5 --recode --out Combined_reduced_to_1_2
-plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.25 --recode --out
-Combined_reduced_to_1_4
-plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.125 --recode --out
-Combined_reduced_to_1_8
-plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.0625 --recode --out
-Combined_reduced_to_1_16
-plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.03125 --recode --out
-Combined_reduced_to_1_32
-## ...and so forth
-## in R (e.g. to check for overlap between datasets)
-# upload .summary file from PLINK ROH anlaysis into RStudio and compare AFF/UNAFF sites across datasets
