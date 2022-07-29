@@ -1,0 +1,67 @@
+
+###### Inbreeding coefficients
+
+## PLINK settings
+
+  --allow-extra-chr
+  --chr-set 80
+  --double-id
+  --freq
+  --hardy
+  --het
+  --ibc
+  --missing
+  --nonfounders
+  --out WGS_stats
+  --vcf filename.vcf
+  
+  
+###### Multilocus Heterozygosity
+ 
+library("inbreedR")
+library(vcfR)
+library(reshape2)
+
+vcf_file <- "filename.vcf"
+# read vcf
+vcf <- read.vcfR(vcf_file, verbose = FALSE )
+# extract genotypes
+gt <- extract.gt(vcf)
+# transpose and data.frame
+gt <- as.data.frame(t(gt), stringsAsFactors = FALSE)
+# NA handling
+gt[gt == "."] <- NA
+# split columns
+snp_geno_wgs <- do.call(cbind, apply(gt, 2, function(x) colsplit(x, "/", c("a","b"))))
+snp_geno_wgs[1:01,1:10]
+# convert
+hihi_wgs_genotype <- inbreedR::convert_raw(snp_geno_wgs)
+# check data
+check_data(hihi_wgs_genotype)
+hihi_wgs_genotype[, 1:10]
+
+#Workflow for estimating the impact of inbreeding on fitness using HFC
+
+## MLH
+
+# MLH is defined as the total number of heterozygous loci in an individual divided by the number of
+# loci typed in the focal individual. An MLH of 0.5 thus means that 50 percent of an indiviudals loci
+# are heterozygous.
+mlh <- MLH(hihi_wgs_genotype)
+names(mlh) <- colnames(vcf@gt)[-1] 
+mlh
+
+mlh_10_hihi <- as.data.frame(mlh)
+# calculate sMLH (standardized multilocus heterozygosities (Coltman et al. 1999))
+
+# sMLH is defined as the total number of heterozygous loci in an individual divided by the sum of
+# average observed heterozygosities in the population over the subset of loci successfully typed in the
+# focal individual
+
+het <- sMLH(hihi_wgs_genotype)
+# variance in sMLH
+het_var <- var(het)
+names(het) <- colnames(vcf@gt)[-1] 
+
+smlh_10_hihi <- as.data.frame(het)
+# calculate sMLH (standardized multilocus heterozygosities (Coltman et al. 1999))
