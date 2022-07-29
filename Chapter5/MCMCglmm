@@ -1,0 +1,74 @@
+
+library(data.table)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(MCMCglmm)
+library(tidyr)
+
+
+##### MCMCglmm models for LRS
+
+### data
+fitness_data <- fread("fitness_data.txt")
+
+
+## poisson:
+
+prior2 <- list(R = list(V = 1, nu = 1),
+        G = list(G1 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000),
+                 G2 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000)))
+
+#It defines a ‘Fisher’ prior¹⁰ that is more informative toward small variances, but also puts less weight
+#in very tiny values close to zero. It is usually a nice prior when variances are expected to be small.
+
+LRS1 <- MCMCglmm(Total_offspring ~ F_total + Sex,
+                   random =~ Cohort + Dam,
+                   rcov=~units,
+                   data = fitness_data,  
+                   prior = prior2, family = "poisson",
+                   nitt = 1003000,thin=20,burnin=3000, 
+                                verbose = FALSE) 
+                                
+LRS2 <- MCMCglmm(Total_offspring ~ F_total * Sex,
+                   random =~ Cohort + Dam,
+                   rcov=~units,
+                   data = fitness_data,  
+                   prior = prior2, family = "poisson",
+                   nitt = 1003000,thin=20,burnin=3000, 
+                                verbose = FALSE) 
+
+## zipoisson:
+
+prior2 <- list(R = list(V = diag(2), nu = 2, fix = 2),
+              G = list(G1 = list(V = diag(2)/2, nu = 2, alpha.mu = c(0,0), alpha.V = diag(2)*1000),
+                       G2 = list(V = diag(2)/2, nu = 2, alpha.mu = c(0,0), alpha.V = diag(2)*1000)#,
+                       #G3 = list(V = diag(2)/2, nu = 2, alpha.mu = c(0,0), alpha.V = diag(2)*1000)#,
+                       #G4 = list(V = diag(2)/2, nu = 2, alpha.mu = c(0,0), alpha.V = diag(2)*1000)
+                      ))
+
+LRS3 <- MCMCglmm(Total_offspring ~ trait - 1 + trait:F_total + trait:Sex,
+                   random = ~ idh(trait):Cohort+
+                             idh(trait):Dam,
+                   rcov = ~ idh(trait):units,
+                   data = fitness_data,  
+                   prior = prior2, family = "zipoisson",
+                   nitt = 1003000,thin=20,burnin=3000, 
+                                verbose = FALSE)
+                                
+LRS4 <- MCMCglmm(Total_offspring ~ trait - 1 + trait:F_total * trait:Sex,
+                   random = ~ idh(trait):Cohort+
+                              idh(trait):Dam,
+                   rcov = ~ idh(trait):units,
+                   data = fitness_data,  
+                   prior = prior2, family = "zipoisson",
+                   nitt = 1003000,thin=20,burnin=3000, 
+                                verbose = FALSE) 
+
+save.image(file = "MCMCglmm_output.RData")
+
+
+
+
+
+
