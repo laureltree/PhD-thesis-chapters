@@ -1,0 +1,43 @@
+
+
+## genome coverage, according to Meyermans et al. (2020;  personal communication)
+
+------------------------------------------------------------------------------------
+
+# We defined the genome coverage of the analysis as the maximal ROH length the analysis can discover, divided by the total genome length you’re analyzing.
+# This can show you how your chosen PLINK settings can affect the outcome. In the ideal situation, your analysis can cover the whole genome for ROH detection, thus 100%.
+# You can calculate this maximal ROH length of the analysis by running something like this:
+  
+library(data.table)
+map <- fread("filename.map")  
+ped <- fread("filename.ped")
+
+
+#First you copy the .map and & .ped file (that you’ve loaded before)
+dummy.map <- map
+dummy.ped <- ped
+
+#.fam file has to be loaded in “fam”
+fam <- fread("filename.fam")
+
+#make large file with only A's to construct homozygous dummy animal, with 999999999 the minimal number of alleles in your analysis, but this can be kept at a 999999999
+tmp1<-t(as.matrix((rep("A",9999999))))
+
+#create dummy ped file: 6 columns + 2*NR of SNPs (all SNPs A)
+
+#First six columns are always equal to fam file
+tmp2<-c((as.matrix(fam[1,1:6])), tmp1[c(7:ncol(dummy.ped))])
+dummy.ped.basis<-as.matrix(t(tmp2))
+dummy.ped.basis
+
+#Write dummy ped and map files
+
+write.table(x=as.matrix(dummy.ped.basis),file="FILENAME.ped",row.names=FALSE,col.names=FALSE,sep=" ",quote=FALSE,na="-9")
+write.table(x=as.matrix(dummy.map),file="FILENAME.map",row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE,na="-9")
+
+#Then perform ROH analysis in PLINK with the settings you prefer on the new .ped & .map file (FILENAME.ped & FILENAME.map)
+              
+#Then you can read the .hom.indiv file and find out the maximal ROH length the analysis was able to detect.
+
+#Divide this by the actual genome length you’re analyzing (e.g. ncbi reference length) and you’ve got the genome coverage
+
