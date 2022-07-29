@@ -1,0 +1,53 @@
+
+library(data.table)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(MCMCglmm)
+library(tidyr)
+
+
+##### MCMCglmm models with repeat measures (e.g. Annual Reproductive Success)
+
+### data
+fitness_data <- fread("ARS_input_data.txt")
+
+prior1 <- list(R = list(V = 1, nu = 1),
+        G = list(G1 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000),
+                 G2 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000),
+                 G3 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000),
+                 G4 = list(V = 1, nu = 1, alpha.mu = 0, alpha.V = 1000)))
+
+#It defines a ‘Fisher’ prior¹⁰ that is more informative toward small variances, but also puts less weight
+#in very tiny values close to zero. It is usually a nice prior when variances are expected to be small.
+
+
+########### 
+
+ARS <- fitness_data
+# filter for NAs!
+# # if there are missing vals in the fixed predictors, MCMCglmm gives a warning
+
+## run mcmcglmm
+Model_ARS1 <- MCMCglmm(AnnRepSuc ~ F_total + Sex + (Age)^2, 
+                    random =~ Cohort + Year + Dam + ID,
+                    data = ARS,
+                    family = "poisson", rcov=~units,
+                    #family="categorical",
+                    trunc = TRUE,
+                    prior = prior1, 
+                    pr = TRUE,
+                    nitt = 503000,thin=20,burnin=3000)
+
+Model_ARS2 <- MCMCglmm(AnnRepSuc ~ F_total * Sex + (Age)^2, 
+                    random =~ Cohort + Year + Dam + ID,
+                    data = ARS3,
+                    family = "poisson", rcov=~units,
+                    #family="categorical",
+                    trunc = TRUE,
+                    prior = prior1, 
+                    pr = TRUE,
+                    nitt = 503000,thin=20,burnin=3000)
+
+save.image(file = "MCMCglmm_output.RData")
+
