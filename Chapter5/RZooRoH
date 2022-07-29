@@ -1,0 +1,45 @@
+
+## RZooRoH
+
+## Partitioning of Individual Autozygosity into Multiple Homozygous-by-Descent Classes
+
+## To install the package, open R and run:
+# install.packages("RZooRoH")
+library(RZooRoH)
+
+## Vignette: https://cran.r-project.org/web/packages/RZooRoH/vignettes/zooroh-vignette.pdf
+## PDF: https://cran.r-project.org/web/packages/RZooRoH/RZooRoH.pdf
+
+
+######## ------------------------------------
+##       RZooRoH MODELS
+######## ------------------------------------
+
+
+## To define a model with pre-defined rates for 13 classes (12 HBD and 1 non-HBD class)
+mix13R <- zoomodel(K=13, err = 0.0025, krates=c(10,20,30,40,50,100,200,500,600,700,1000,2000,2000), layers=TRUE)
+
+## snp file in gen format
+data <- zoodata(genofile = "filename.gen", zformat = "gp", samplefile = "IDs.txt")
+
+## run model
+model_output <- zoorun(mix13R, data, localhbd = TRUE)
+
+## save it all
+save(model_output,file="mix13R_model_output.Rdata")
+
+
+# Make Excel file w inbreeding values per class
+#library("xlsx")
+#write.xlsx(as.data.frame(round(model_output@realized[,],3)), file = "mix13R_model_output.xlsx",
+#      sheetName = "name", append = FALSE)
+
+## plot examples
+#pdf(file = "inbreeding_over_time.pdf",  width=12, height=9)
+#zooplot_prophbd(list(All=model_output), style='lines', cumulative = TRUE)
+#dev.off()
+
+#x <- 1-model_output@realized[,13]
+#pdf(file = "inbreeding_distribution.pdf",  width=12, height=9)
+#hist(x,nc=20,main="",xlab="Inbreeding coefficient",xlim=c(0.10,0.45),col='#797A87')
+#dev.off()
