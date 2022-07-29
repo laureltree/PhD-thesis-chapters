@@ -1,0 +1,14 @@
+############ down-sampling a larger dataset ##########
+
+## in command line:
+## random subsample to 1/16, etc.
+plink --vcf filename.vcf --allow-extra-chr --thin 0.5 --recode --out File_reduced_to_1_2
+plink --vcf filename.vcf --allow-extra-chr --thin 0.25 --recode --out File_reduced_to_1_4
+plink --vcf filename.vcf --allow-extra-chr --thin 0.125 --recode --out File_reduced_to_1_8
+plink --vcf filename.vcf --allow-extra-chr --thin 0.0625 --recode --out File_reduced_to_1_16
+plink --vcf filename.vcf --allow-extra-chr --thin 0.03125 --recode --out File_reduced_to_1_32
+
+## ...and so forth
+
+# then use R (e.g. to check for overlap between datasets)
+# e.g. upload .summary file from PLINK ROH anlaysis into RStudio and compare AFF/UNAFF sites across datasets 
