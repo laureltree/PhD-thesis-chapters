@@ -1,0 +1,45 @@
+
+## This is an example summary of codes used for the various analyses run in Duntsch et al. (2021)
+## For more details, please contact the authors of the various tools/packages directly
+
+############ ROH inbreeding analysis ##########
+
+#### PART 1: rule-based approach
+
+# note: Perform basic quality control on data as you normally would do
+# using PLINK (Chang et al., 2015) in command line:
+## e.g
+plink --vcf SNPchip_data.vcf --allow-extra-chr --nonfounders --homozyg --homozyg-snp 30 --homozyg-kb 300 --
+
+homozyg-density 100 --homozyg-gap 200 --homozyg-window-snp 15 --homozyg-window-het 1 --homozyg-window-
+missing 1 --homozyg-window-threshold 0.05 --out SNP_chip_data_ROH
+
+
+
+### PART 2: model-based approach
+
+# note: transform ped datasets (plink) to Oxford GEN format (GP: genotype probabilities) + make-bed (fam file
+# needed if genome coverage calculated)
+# using RZooRoH (Druet, T., & Gautier, M., 2017) in R:
+library(RZooRoH)
+## load data
+SNPchip_GP <- zoodata(genofile = "SNPchip_data.gen", zformat = "gp", samplefile = "sample_names.txt")
+## define model (e.g. if you simply want to capture all segments, you can put 4 classes 10, 100, 1000 + non-HBD)
+mix4R <- zoomodel(K=4, base=10, err = 0.0025, layers=TRUE)
+## run model on data
+SNPchip_model_out <- zoorun(mix4R, SNPchip_GP, localhbd = TRUE)
+############ down-sampling a larger dataset ##########
+## in command line:
+## random subsample to 1/16, etc.
+plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.5 --recode --out Combined_reduced_to_1_2
+plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.25 --recode --out
+Combined_reduced_to_1_4
+plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.125 --recode --out
+Combined_reduced_to_1_8
+plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.0625 --recode --out
+Combined_reduced_to_1_16
+plink --vcf ../data/stats/Combined_genotypes.vcf --allow-extra-chr --thin 0.03125 --recode --out
+Combined_reduced_to_1_32
+## ...and so forth
+## in R (e.g. to check for overlap between datasets)
+# upload .summary file from PLINK ROH anlaysis into RStudio and compare AFF/UNAFF sites across datasets
