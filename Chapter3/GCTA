@@ -1,0 +1,93 @@
+
+./gcta64 --bfile chr_1 --make-grm --autosome-num 77 --out grm_ch_1
+./gcta64 --bfile all_BUT_chr_1 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_1
+
+./gcta64 --bfile chr_2 --make-grm --autosome-num 77 --out grm_ch_2
+./gcta64 --bfile all_BUT_chr_2 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_2
+
+./gcta64 --bfile chr_3 --make-grm --autosome-num 77 --out grm_ch_3
+./gcta64 --bfile all_BUT_chr_3 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_3
+
+./gcta64 --bfile chr_4 --make-grm --autosome-num 77 --out grm_ch_4
+./gcta64 --bfile all_BUT_chr_4 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_4
+
+./gcta64 --bfile chr_5 --make-grm --autosome-num 77 --out grm_ch_5
+./gcta64 --bfile all_BUT_chr_5 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_5
+
+./gcta64 --bfile chr_6 --make-grm --autosome-num 77 --out grm_ch_6
+./gcta64 --bfile all_BUT_chr_6 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_6
+
+./gcta64 --bfile chr_7 --make-grm --autosome-num 77 --out grm_ch_7
+./gcta64 --bfile all_BUT_chr_7 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_7
+
+./gcta64 --bfile chr_8 --make-grm --autosome-num 77 --out grm_ch_8
+./gcta64 --bfile all_BUT_chr_8 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_8
+
+./gcta64 --bfile chr_9 --make-grm --autosome-num 77 --out grm_ch_9
+./gcta64 --bfile all_BUT_chr_9 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_9
+
+./gcta64 --bfile chr_10 --make-grm --autosome-num 77 --out grm_ch_10
+./gcta64 --bfile all_BUT_chr_10 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_10
+
+
+
+./gcta64 --bfile chr_11 --make-grm --autosome-num 77 --out grm_ch_11
+./gcta64 --bfile all_BUT_chr_11 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_11
+
+./gcta64 --bfile chr_12 --make-grm --autosome-num 77 --out grm_ch_12
+./gcta64 --bfile all_BUT_chr_12 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_12
+
+./gcta64 --bfile chr_13 --make-grm --autosome-num 77 --out grm_ch_13
+./gcta64 --bfile all_BUT_chr_13 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_13
+
+./gcta64 --bfile chr_14 --make-grm --autosome-num 77 --out grm_ch_14
+./gcta64 --bfile all_BUT_chr_14 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_14
+
+./gcta64 --bfile chr_15 --make-grm --autosome-num 77 --out grm_ch_15
+./gcta64 --bfile all_BUT_chr_15 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_15
+
+./gcta64 --bfile chr_17 --make-grm --autosome-num 77 --out grm_ch_17
+./gcta64 --bfile all_BUT_chr_17 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_17
+
+./gcta64 --bfile chr_18 --make-grm --autosome-num 77 --out grm_ch_18
+./gcta64 --bfile all_BUT_chr_18 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_18
+
+./gcta64 --bfile chr_19 --make-grm --autosome-num 77 --out grm_ch_19
+./gcta64 --bfile all_BUT_chr_19 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_19
+
+./gcta64 --bfile chr_20 --make-grm --autosome-num 77 --out grm_ch_20
+./gcta64 --bfile all_BUT_chr_20 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_20
+
+
+
+./gcta64 --bfile chr_21 --make-grm --autosome-num 77 --out grm_ch_21
+./gcta64 --bfile all_BUT_chr_21 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_21
+
+./gcta64 --bfile chr_22 --make-grm --autosome-num 77 --out grm_ch_22
+./gcta64 --bfile all_BUT_chr_22 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_22
+
+./gcta64 --bfile chr_23 --make-grm --autosome-num 77 --out grm_ch_23
+./gcta64 --bfile all_BUT_chr_23 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_23
+
+./gcta64 --bfile chr_24 --make-grm --autosome-num 77 --out grm_ch_24
+./gcta64 --bfile all_BUT_chr_24 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_24
+
+./gcta64 --bfile chr_26 --make-grm --autosome-num 77 --out grm_ch_26
+./gcta64 --bfile all_BUT_chr_26 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_26
+
+./gcta64 --bfile chr_27 --make-grm --autosome-num 77 --out grm_ch_27
+./gcta64 --bfile all_BUT_chr_27 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_27
+
+./gcta64 --bfile chr_28 --make-grm --autosome-num 77 --out grm_ch_28
+./gcta64 --bfile all_BUT_chr_28 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_28
+
+
+./gcta64 --bfile chr_31 --make-grm --autosome-num 77 --out grm_ch_31
+./gcta64 --bfile all_BUT_chr_31 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_31
+
+./gcta64 --bfile chr_33 --make-grm --autosome-num 77 --out grm_ch_33
+./gcta64 --bfile all_BUT_chr_33 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_33
+
+
+./gcta64 --bfile chr_77 --make-grm --autosome-num 77 --out grm_ch_77
+./gcta64 --bfile all_BUT_chr_77 --make-grm --autosome-num 77 --out grm_ALL_BUT_ch_77
