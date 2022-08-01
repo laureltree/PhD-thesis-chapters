@@ -15,7 +15,11 @@ Sequoia - https://rdrr.io/cran/sequoia/
 COLONY - https://www.zsl.org/science/software/colony
 
 Estimate relatedness:
+GCTA - https://yanglab.westlake.edu.cn/software/gcta/#Overview
 kinship2 - https://cran.r-project.org/web/packages/kinship2/index.html
 
 Plot genotyping plates:
 platetools - https://cran.r-project.org/web/packages/platetools/index.html
+
+
+Authors are happy to receive information about new tools that can be added to this list.
