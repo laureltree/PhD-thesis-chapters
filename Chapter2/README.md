@@ -1,7 +1,6 @@
 ## Who are you? A framework to identify and report genetic sample mix-ups
 
-### Synopsys
-We surveyed the community and found that almost 80% of responding researchers have encountered sample mix-ups. However, many recent studies in the field of molecular ecology do not appear to systematically report individual assignment checks as part of their publications. Although checks may be done, lack of consistent reporting means that it is difficult to assess whether sample mix-ups have occurred or been detected. Here, we present an easy-to-follow sample verification framework that can utilise existing metadata, including species, population structure, sex and pedigree information.
+We surveyed the community and found that almost 80% of responding researchers have encountered sample mix-ups. However, many recent studies in the field of molecular ecology do not appear to systematically report individual assignment checks as part of their publications. Although checks may be done, lack of consistent reporting means that it is difficult to assess whether sample mix-ups have occurred or been detected. Here, we present an easy-to-follow sample verification framework that can utilise existing metadata, including species, population structure, sex and pedigree information (detailed methods in the publication).
 
 #### Detection of sample mix-ups
 Initial comparison of heterozygosity values of genotyped Z-linked SNP array markers for the Tiritiri Matangi individuals. Later, sample mix-up was confirmed comparing pedigree (microsatellite-based) and genomic relatedness in R.
