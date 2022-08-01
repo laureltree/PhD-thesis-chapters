@@ -1,0 +1,12 @@
+https://www.cog-genomics.org/plink/1.9/filter
+
+use commands:
+--tfile filename
+--chr-set 80
+--freq (makes table of frequencies - 325 are less than maf of 0.01)
+--geno (default 0.1 to remove low genotyping SNPs)
+--mind (default 0.1 to remove low genotyping individuals)
+--nonfounders
+--maf 0.01 - removes 325 SNPs
+--geno (default 0.1 to remove low genotyping SNPs)
+--mind (default 0.1 to remove low genotyping individuals)
