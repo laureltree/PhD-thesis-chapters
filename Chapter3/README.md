@@ -1,7 +1,7 @@
 
 ## Polygenic basis for adaptive morphological variation in a threatened Aotearoa | New Zealand bird, the hihi (*Notiomystis cincta*)
 
-
+[Published Article](https://doi.org/10.1098/rspb.2020.0948)
 #### Genotyping and pedigree data
 Of the 58 466 SNPs included on a costum array, 45 553 markers were designated as polymorphic high resolution according to the default quality control metrics in the Axiom Analysis Suite software. PLINK filtering (--maf 0.01, --hwe 1e-20) resulted in the removal of 325 and 69 loci among the autosomes, respectively. Two thousand seven hundred and thirty-four SNPs appeared as duplicates (i.e. mapped to the same chromosome at the same position) and hence only one SNP from each position was retained. To avoid population structure as a confounding factor, we only included birds from Tiritiri Matangi Island in this study, which shows no structure (electronic supplementary material, figure S1). No individual was removed due to low genotyping rates (--mind), but some were excluded for having incomplete phenotypic information. The final dataset contained 39 699 autosomal genomic loci, with a mean call rate of 0.997398, and complete sex and phenotype information on all three traits for 523 birds.
 
