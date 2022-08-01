@@ -1,6 +1,8 @@
 
 ## Genomic data of different resolutions reveal consistent inbreeding estimates but contrasting homozygosity landscapes for the threatened Aotearoa New Zealand hihi
 
+We performed an in-depth inbreeding analysis for hihi (Notiomystis cincta), an endemic and nationally vulnerable passerine bird of Aotearoa New Zealand. We first focused on subsampling variants from a reference genome male and then extended our analysis to 10 hihi where low-coverage whole genome resequencing, RAD-seq and SNP array genotypes are available. Detailed methods can be found in [publication](https://doi.org/10.1111/mec.16068).
+
 #### Genomic data and SNP genotyping
 All 10 additional hihi under investigation have RAD-seq as well as whole genome resequencing data available, and have been genotyped using a custom 50 K Affymetrix SNP array. This array was developed before the generation of the hihi reference genome through identification of SNPs from de novo assembly of RAD-seq from 26 individuals, including these 10 birds, and low-coverage whole-genome sequencing (lcWGS) of these 10 individuals (detailed in de Villemereuil et al. (2019), Duntsch et al. (2020) and Lee et al. (2021)). Of the 58,466 SNPs included on the array, 45,553 markers passed initial default quality control metrics in the Axiom Analysis Suite software and were classified as “PolyHighResolution” (i.e., polymorphic SNPs with call rate of >95%, at least two minor alleles observed and genotype clusters well-separated) and were used in these analyses.
 
