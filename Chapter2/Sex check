@@ -1,6 +1,9 @@
+Step-by-step
+
 Z-linked SNPs were used to confirm the sex of the genotyped individuals by calculating homozygosity by locus for 2,694 sex markers in the 'GENHET' package 
 in R (Coulon, 2010). Individuals with HL values of 0-0.2 were assigned as male. Individuals with HL values of 0.8-1 were assigned as female, 
-allowing for rare typing errors and SNPs in pseudo-autosomal regions, as in birds females are the heterozygous sex. For comparison, 
-we also made use of the –check-sex function in PLINK, with the default 0.2/0.8 F-statistic threshold. 
+allowing for rare typing errors and SNPs in pseudo-autosomal regions, as in birds females are the heterozygous sex. 
+
+For comparison, we also made use of the –check-sex function in PLINK, with the default 0.2/0.8 F-statistic threshold. 
 A new sex and new ID was assigned to a sample where both tools agreed on the sex but it differed from the recorded morphological sex. 
 For individuals with intermediate values from one or both genetic sex checks, the sex was conservatively set as unknown (0) and the sample ID flagged.
