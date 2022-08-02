@@ -1,7 +1,7 @@
 
 ## Genomic signatures of inbreeding depression for a threatened Aotearoa New Zealand passerine
 
-Here, we investigate inbreeding and inbreeding depression for hihi (*Notiomystis cincta*). Firstly, using a custom 45k SNP array, we explore genomic inbreeding patterns by inferring homozygous segments across the genome. Secondly, we measure genomic inbreeding effects on fitness, measured as lifetime reproductive success, and its three components, annual reproductive success, juvenile survival and adult annual survival, in 363 hihi. This manuscript has been submittee for publication and is currently being peer-reviewed.
+Here, we investigate inbreeding and inbreeding depression for hihi (*Notiomystis cincta*). Firstly, using a custom 45k SNP array, we explore genomic inbreeding patterns by inferring homozygous segments across the genome. Secondly, we measure genomic inbreeding effects on fitness, measured as lifetime reproductive success, and its three components, annual reproductive success, juvenile survival and adult annual survival, in 363 hihi. This manuscript has been submitted for publication and is currently being peer-reviewed.
 
 #### Genotyping and data filtering
 Of the 58,466 SNPs included on the array, 45,553 markers passed initial quality control metrics in the Axiom Analysis Suite software and PLINK filtering for minor allele frequency and Hardy-Weinberg equilibrium (--maf 0.01, --hwe 1e-20). In 2021, those SNPs were mapped to contigs for a draft hihi reference genome (version NotCin10.4) and those genome contigs were then scaffolded into chromosomes based on homology to zebra finch and the hihi linkage map.
